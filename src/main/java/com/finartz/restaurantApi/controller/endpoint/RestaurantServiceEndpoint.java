@@ -27,7 +27,11 @@ public class RestaurantServiceEndpoint {
             public static final String ID="id";
         }
     }
-    public class GetAllByStatus{
-        public static final String URI=BASE_URI+"/status";
+    public class GetAllByStatusAwaiting{
+        public static final String URI=BASE_URI+"/awaiting";
+    }
+
+    public class GetAllByStatusApproved{
+        public static final String URI=BASE_URI;
     }
 }

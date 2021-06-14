@@ -37,7 +37,6 @@ public class MenuFoundationServiceImpl implements MenuFoundationService {
         return menuRepository.saveMenu(menuEntity);
     }
 
-
     @Override
     public MenuEntity getById(Long menuId) {
         return menuRepository.findById(menuId);

@@ -42,13 +42,19 @@ public class RestaurantAggregationServiceImpl implements RestaurantAggregationSe
     }
 
     @Override
-    public void updateRestaurant(Long id,CreateRestaurantRequest createRestaurantRequest) {
-         restaurantFoundationService.updateRestaurant(id,createRestaurantRequest);
+    public void updateRestaurant(Long id, CreateRestaurantRequest createRestaurantRequest) {
+        restaurantFoundationService.updateRestaurant(id, createRestaurantRequest);
+    }
+
+
+    @Override
+    public List<RestaurantDto> getAllRestaurantByApproved() {
+        return restaurantConverter.convertToDtoList(restaurantFoundationService.getAllRestaurantByStatus(StatusEnum.APPROVED));
     }
 
     @Override
-    public List<RestaurantDto> getAllRestaurantByStatus(StatusEnum statusEnum) {
-        return restaurantConverter.convertToDtoList(restaurantFoundationService.getAllRestaurantByStatus(statusEnum));
+    public List<RestaurantDto> getAllRestaurantByAwaiting() {
+        return restaurantConverter.convertToDtoList(restaurantFoundationService.getAllRestaurantByStatus(StatusEnum.AWAITING));
     }
 
     /*
@@ -67,6 +73,12 @@ public class RestaurantAggregationServiceImpl implements RestaurantAggregationSe
     public List<RestaurantDto> getAllRestaurantByAwaiting() {
         return restaurantConverter.convertToDtoList(restaurantFoundationService.getAllRestaurantByAwaiting());
 
+    }
+
+
+    @Override
+    public List<RestaurantDto> getAllRestaurantByStatus(StatusEnum statusEnum) {
+        return restaurantConverter.convertToDtoList(restaurantFoundationService.getAllRestaurantByStatus(statusEnum));
     }
 
      */

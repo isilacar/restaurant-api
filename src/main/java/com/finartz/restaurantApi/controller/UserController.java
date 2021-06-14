@@ -31,7 +31,7 @@ public class UserController {
 
     @GetMapping(UserServiceEndpoint.GetUser.URI)
     public ResponseEntity<UserDto> getUser(@PathVariable(value = UserServiceEndpoint.GetUser.PathVariable.ID)
-                                                       Long id){
+                                                       Long id) {
         return ResponseEntity.ok().body(userAggregationService.getUser(id));
     }
 

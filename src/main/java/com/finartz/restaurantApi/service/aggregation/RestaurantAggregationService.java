@@ -2,7 +2,6 @@ package com.finartz.restaurantApi.service.aggregation;
 
 
 import com.finartz.restaurantApi.model.dto.RestaurantDto;
-import com.finartz.restaurantApi.model.enumeration.StatusEnum;
 import com.finartz.restaurantApi.model.request.CreateRestaurantRequest;
 
 import java.util.List;
@@ -18,13 +17,13 @@ public interface RestaurantAggregationService {
 
     void updateRestaurant(Long id,CreateRestaurantRequest createRestaurantRequest);
 
-    List<RestaurantDto> getAllRestaurantByStatus(StatusEnum statusEnum);
+  //  List<RestaurantDto> getAllRestaurantByStatus(StatusEnum statusEnum);
 
 
-    // List<RestaurantDto> getAllRestaurantByApproved();
+     List<RestaurantDto> getAllRestaurantByApproved();
 
     // void updateStatus(Long id, StatusEnum status);
 
-    //List<RestaurantDto> getAllRestaurantByAwaiting();
+    List<RestaurantDto> getAllRestaurantByAwaiting();
 
 }

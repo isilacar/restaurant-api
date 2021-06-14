@@ -20,7 +20,7 @@ public class MenuController {
     }
 
     @PostMapping(MenuServiceEndpoint.SaveRestaurantMenu.URI)
-    public ResponseEntity<MenuDto> saveRestaurantMenu(@RequestBody CreateRestaurantMenuRequest menuRequest) {
+    public ResponseEntity<MenuDto> saveRestaurantMenu(@Valid @RequestBody CreateRestaurantMenuRequest menuRequest) {
         return ResponseEntity.ok().body(menuAggregationService.saveRestaurantMenu(menuRequest));
 
     }

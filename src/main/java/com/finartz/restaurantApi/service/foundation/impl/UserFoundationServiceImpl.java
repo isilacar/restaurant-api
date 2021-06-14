@@ -25,7 +25,10 @@ public class UserFoundationServiceImpl implements UserFoundationService {
 
     @Override
     public UserEntity getById(Long id) {
-        return userRepository.findById(id);
+
+        UserEntity userEntity = userRepository.findById(id);
+
+        return userEntity;
     }
 
     @Override
@@ -38,9 +41,6 @@ public class UserFoundationServiceImpl implements UserFoundationService {
         String encodedPassword = bCryptPasswordEncoder.encode(userRequest.getPassword());
         userRequest.setPassword(encodedPassword);
 
-        if (userRepository.findByUserName(userRequest.getUserName()) != null) {
-            throw new RuntimeException("This username is already exist..");
-        }
         UserEntity userEntity = userRequestConverter.convertToEntity(userRequest);
         return userRepository.saveUser(userEntity);
     }

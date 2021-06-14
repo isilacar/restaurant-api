@@ -29,7 +29,7 @@ public class CreateRestaurantAddressRequest extends BaseRequest{
 
     @NotNull(message = "{zipcode.notnull}")
     @Min(value = 1,message = "{zipcode.min}")
-    private Long zipCode;
+    private int zipCode;
 
     @NotBlank(message = "{addressDetail.notblank}")
     private String detail;

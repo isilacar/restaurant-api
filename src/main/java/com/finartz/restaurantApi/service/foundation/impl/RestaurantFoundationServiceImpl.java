@@ -59,10 +59,6 @@ public class RestaurantFoundationServiceImpl implements RestaurantFoundationServ
             userName = tokenManager.getUsernameFromToken(token);
         }
         UserEntity currentUser = userFoundationService.getByUsername(userName);
-        if (currentUser == null) {
-            log.info("User not found..");
-            throw new RuntimeException("User not found..");
-        }
         List<RestaurantEntity> nearestRestaurantEntities = restaurantRepository.findNearestRestaurantByStatusApproved(currentUser.getId());
         Map<Double, RestaurantEntity> entityMap = new HashMap<>();
         for (RestaurantEntity restaurantEntity : nearestRestaurantEntities) {
@@ -81,7 +77,7 @@ public class RestaurantFoundationServiceImpl implements RestaurantFoundationServ
     }
 
     @Override
-    public void updateRestaurant(Long id, CreateRestaurantRequest createRestaurantRequest) {
+    public void updateRestaurant(Long id, CreateRestaurantRequest createRestaurantRequest) {  //updatesRestaurantRequest oluştur,SON KARAR BÖYLE KALSIN
         RestaurantEntity restaurantEntity = restaurantRepository.findById(id);
         if (createRestaurantRequest.getName() != null) {
             restaurantEntity.setName(createRestaurantRequest.getName());
@@ -95,7 +91,7 @@ public class RestaurantFoundationServiceImpl implements RestaurantFoundationServ
         if (createRestaurantRequest.getLongitude() != null) {
             restaurantEntity.setLongitude(createRestaurantRequest.getLongitude());
         }
-       // restaurantEntity.setUpdateDate(LocalDate.now());
+        // restaurantEntity.setUpdateDate(LocalDate.now());
         restaurantRepository.updateRestaurant(id, restaurantEntity);
     }
 
@@ -124,26 +120,4 @@ public class RestaurantFoundationServiceImpl implements RestaurantFoundationServ
             return (dist);
         }
     }
-
-
-
-     /*
-       @Override
-       public List<RestaurantEntity> getAllRestaurantByApproved() {
-           return restaurantRepository.findRestaurantByStatusApproved();
-    }
-
-
-           @Override
-           public void updateStatus(Long id, StatusEnum status) {
-               restaurantRepository.updateStatus(id,status);
-           }
-
-
-
-       @Override
-       public List<RestaurantEntity> getAllRestaurantByAwaiting() {
-           return restaurantRepository.findRestaurantByStatusAwaiting();
-       }
-   */
 }

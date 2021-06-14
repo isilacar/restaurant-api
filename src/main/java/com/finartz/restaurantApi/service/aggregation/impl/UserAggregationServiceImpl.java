@@ -36,25 +36,20 @@ public class UserAggregationServiceImpl implements UserAggregationService {
 
     @Override
     public UserDto saveUser(CreateUserRequest userRequest) {
-
         return userConverter.convertToDto(userFoundationService.saveUser(userRequest));
-
     }
 
     @Override
-    public UserDto getUser(Long id) {
+    public UserDto getUser(Long id){
         return userConverter.convertToDto(userFoundationService.getById(id));
     }
-
 
     @Override
     public JwtResponse createToken(CreateUserRequest userRequest) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userRequest.getUserName(),
                 userRequest.getPassword()));
-
         UserDetails userDetails = userDetailsService.loadUserByUsername(userRequest.getUserName());
         String token = tokenManager.generateJwtToken(userDetails);
-
         return new JwtResponse(token);
     }
 

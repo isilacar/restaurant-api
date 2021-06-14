@@ -2,6 +2,8 @@ package com.finartz.restaurantApi.dao.impl;
 
 import com.finartz.restaurantApi.base.repository.BaseRepository;
 import com.finartz.restaurantApi.dao.UserRepository;
+import com.finartz.restaurantApi.error.UserError;
+import com.finartz.restaurantApi.exception.ResourceNotFoundException;
 import com.finartz.restaurantApi.model.entity.UserEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.query.Query;
@@ -30,10 +32,34 @@ public class UserRepositoryImpl extends BaseRepository<UserEntity> implements Us
 
     @Override
     public UserEntity findById(Long userId) {
+     /*   String hql = "select user from UserEntity user left join fetch user.addresses where user.id=:id";
+        UserEntity userEntity = null;
+        try {
+            Query query = (Query) entityManager.createQuery(hql);
+            query.setParameter("id", userId);
+            userEntity = (UserEntity) query.getSingleResult();
+        } catch (UserNotFoundException exception) {
+            log.info(exception.getMessage());
+        }
+        return userEntity;
+
         return (UserEntity) entityManager
                 .createQuery("select user from UserEntity user left join fetch user.addresses where user.id=:id")
                 .setParameter("id", userId)
                 .getSingleResult();
+      */
+        UserEntity userEntity = null;
+        try {
+            String hql = "select user from UserEntity user left join fetch user.addresses where user.id=:id";
+            Query query = (Query) entityManager.createQuery(hql);
+            query.setParameter("id", userId);
+            userEntity = (UserEntity) query.getSingleResult();
+        } catch (NoResultException exception) {
+           throw new ResourceNotFoundException(UserError.USER_NOT_FOUND);
+        }
+
+        return userEntity;
+
     }
 
     @Override
@@ -45,8 +71,7 @@ public class UserRepositoryImpl extends BaseRepository<UserEntity> implements Us
             query.setParameter("username", userName);
             userEntity = (UserEntity) query.getSingleResult();
         } catch (NoResultException exception) {
-            log.error("No user found. Error message is{}"
-                    , exception.getMessage());
+            throw new ResourceNotFoundException(UserError.USER_NOT_FOUND);
         }
 
         return userEntity;

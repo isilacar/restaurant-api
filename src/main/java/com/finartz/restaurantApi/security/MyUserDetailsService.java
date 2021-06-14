@@ -27,6 +27,7 @@ public class MyUserDetailsService implements UserDetailsService {
         }
         else{
             throw new RuntimeException("Username Not Found..");
+           // throw new UsernameNotFoundException("Username Not Found");
         }
 
     }

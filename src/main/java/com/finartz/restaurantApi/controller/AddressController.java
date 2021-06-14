@@ -22,7 +22,7 @@ public class AddressController {
     }
 
     @PostMapping(AddressServiceEndpoint.SaveUserAddress.URI)
-    public ResponseEntity<AddressDto> saveUserAddress(@RequestBody CreateUserAddressRequest userAddressRequest) {
+    public ResponseEntity<AddressDto> saveUserAddress(@Valid @RequestBody CreateUserAddressRequest userAddressRequest) {
         return ResponseEntity.ok().body(addressAggregationService.saveUserAddress(userAddressRequest));
     }
 

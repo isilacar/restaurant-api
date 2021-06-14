@@ -10,6 +10,8 @@ import javax.validation.constraints.*;
 @Setter
 public class CreateUserRequest extends BaseRequest{
     private static final long serialVersionUID = -6087590188257097786L;
+    public static final String EMAIL_REGEXP = "^[A-Za-z0-9+_-]+(?:\\.[a-zA-Z0-9]+)*@[A-Za-z]+\\.[A-Za-z]+$";
+    public static final String PASSWORD_REGEXP = "^[a-zA-Z0-9]{6}";
 
     private Role role;
 
@@ -20,8 +22,7 @@ public class CreateUserRequest extends BaseRequest{
                                             0 dan büyük olmalıdır.Bu durumda ben null,empty olmasını istemediğim için
                                             notblank kullanmam benim için daha avantajlı*/
 
-  //  @Min(3)
-   // @Max(35)
+
     @Size(min = 3,max = 35,message = "{username.size}")
     private String userName;
 
@@ -32,13 +33,13 @@ public class CreateUserRequest extends BaseRequest{
 
     //properties filedan error mesajları tanımlayıp çekmeye bak.
     //.dan sonra bla bla gelsin
-    @Pattern(regexp = "^[A-Za-z0-9+_-]+(?:\\.[a-zA-Z0-9]+)*@[A-Za-z]+\\.[A-Za-z]+$",
+    @Pattern(regexp = EMAIL_REGEXP,
             message = "{email.pattern}")
     @NotNull(message = "{email.notnull}")
     private String eMail;
 
     @NotBlank(message = "{password.notblank}")
-    @Pattern(regexp="^[a-zA-Z0-9]{6}",message="{password.pattern}")//şifremiz harf sayı içerebilir,6 karakter olmalı
+    @Pattern(regexp= PASSWORD_REGEXP,message="{password.pattern}")//şifremiz harf sayı içerebilir,6 karakter olmalı
     private String password;
 
     @DecimalMin(value = "-90.0",message = "{latitude.min}")

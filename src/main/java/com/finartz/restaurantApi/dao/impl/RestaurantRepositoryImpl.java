@@ -2,6 +2,8 @@ package com.finartz.restaurantApi.dao.impl;
 
 import com.finartz.restaurantApi.base.repository.BaseRepository;
 import com.finartz.restaurantApi.dao.RestaurantRepository;
+import com.finartz.restaurantApi.error.RestaurantError;
+import com.finartz.restaurantApi.exception.ResourceNotFoundException;
 import com.finartz.restaurantApi.model.entity.RestaurantEntity;
 import com.finartz.restaurantApi.model.enumeration.StatusEnum;
 import org.hibernate.query.Query;
@@ -9,6 +11,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.transaction.Transactional;
 import java.util.List;
 
@@ -31,11 +34,19 @@ public class RestaurantRepositoryImpl extends BaseRepository<RestaurantEntity> i
 
     @Override
     public RestaurantEntity findById(Long restaurantId) {
-        String hql = "select restaurant from RestaurantEntity restaurant" +
-                " left join fetch restaurant.addressEntities WHERE restaurant.id= :restId";
-        Query query = (Query) entityManager.createQuery(hql);
-        query.setParameter("restId", restaurantId);
-        return (RestaurantEntity) query.getSingleResult();
+
+        RestaurantEntity restaurantEntity=null;
+        try{
+            String hql = "select restaurant from RestaurantEntity restaurant" +
+                    " left join fetch restaurant.addressEntities WHERE restaurant.id= :restId";
+            Query query = (Query) entityManager.createQuery(hql);
+            query.setParameter("restId", restaurantId);
+            restaurantEntity=(RestaurantEntity) query.getSingleResult();
+        }catch (NoResultException exception){
+            throw new ResourceNotFoundException(RestaurantError.RESTAURANT_NOT_FOUND);
+        }
+
+        return restaurantEntity;
     }
 
     @Override

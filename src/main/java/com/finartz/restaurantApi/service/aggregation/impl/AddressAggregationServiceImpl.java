@@ -27,6 +27,7 @@ public class AddressAggregationServiceImpl implements AddressAggregationService 
 
     @Override
     public AddressDto saveRestaurantAddress(CreateRestaurantAddressRequest restaurantAddressRequest) {
+        //değişkene atayıp tanımla
         return addressConverter.convertToDto(addressFoundationService.saveRestaurantAddress(restaurantAddressRequest));
     }
 
