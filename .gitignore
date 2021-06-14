@@ -3,6 +3,7 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+*.sql
 
 
 ### STS ###
@@ -32,5 +33,4 @@ build/
 
 ### VS Code ###
 .vscode/
-
-/console.sql
+.DS_Store
