@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public class MealDTOConverter implements BaseDTOConverter<MealEntity, MealDto> {
 
     @Override
-    public MealEntity convertToEntity(MealDto dto) {
+    public MealEntity convertToEntity(com.finartz.restaurantApi.model.dto.MealDto dto) {
         MealEntity mealEntity = new MealEntity();
         mealEntity.setId(dto.getId());
         mealEntity.setCreateDate(dto.getCreateDate());
@@ -26,7 +26,7 @@ public class MealDTOConverter implements BaseDTOConverter<MealEntity, MealDto> {
 
     @Override
     public MealDto convertToDto(MealEntity entity) {
-        MealDto mealDto = new MealDto();
+        com.finartz.restaurantApi.model.dto.MealDto mealDto = new com.finartz.restaurantApi.model.dto.MealDto();
         mealDto.setId(entity.getId());
         mealDto.setCreateDate(entity.getCreateDate());
         mealDto.setUpdateDate(entity.getUpdateDate());

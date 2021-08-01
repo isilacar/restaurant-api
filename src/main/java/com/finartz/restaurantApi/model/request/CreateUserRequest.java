@@ -1,6 +1,6 @@
 package com.finartz.restaurantApi.model.request;
 
-import com.finartz.restaurantApi.model.enumeration.Role;
+import com.finartz.restaurantApi.model.enumeration.UserRoleStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +13,7 @@ public class CreateUserRequest extends BaseRequest{
     public static final String EMAIL_REGEXP = "^[A-Za-z0-9+_-]+(?:\\.[a-zA-Z0-9]+)*@[A-Za-z]+\\.[A-Za-z]+$";
     public static final String PASSWORD_REGEXP = "^[a-zA-Z0-9]{6}";
 
-    private Role role;
+    private UserRoleStatus role;
 
     @NotNull(message = "{username.notnull}")       //null değer alamaz
     @NotEmpty(message = "{username.notempty}")  //null,empty olamaz,value length 0 dan büyük olmalı,null,"" gibi olamaz

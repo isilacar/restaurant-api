@@ -1,6 +1,6 @@
 package com.finartz.restaurantApi.model.entity;
 
-import com.finartz.restaurantApi.model.enumeration.Role;
+import com.finartz.restaurantApi.model.enumeration.UserRoleStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +20,7 @@ import java.util.List;
 public class UserEntity extends BaseEntity{
 
     @Enumerated(value = EnumType.STRING)
-    private Role role;
+    private UserRoleStatus role;
 
     private String userName;
     private String password;

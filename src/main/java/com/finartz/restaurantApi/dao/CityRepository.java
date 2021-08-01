@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface CityRepository {
 
-    List<CityEntity> getAll();
+    List<CityEntity> findCitites();
 
-    CityEntity findById(Long id);
+    CityEntity findCity(Long id);
 
 
 }

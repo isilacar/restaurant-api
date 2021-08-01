@@ -1,5 +1,5 @@
 package com.finartz.restaurantApi.model.enumeration;
 
-public enum StatusEnum {
+public enum RestaurantStatus {
     APPROVED,REJECTED,AWAITING;
 }

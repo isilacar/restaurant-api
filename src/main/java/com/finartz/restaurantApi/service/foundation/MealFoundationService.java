@@ -1,15 +1,15 @@
 package com.finartz.restaurantApi.service.foundation;
 
-import com.finartz.restaurantApi.model.entity.MealEntity;
-import com.finartz.restaurantApi.model.request.CreateMealRequest;
+
+import com.finartz.restaurantApi.model.dto.MealDto;
 
 import java.util.List;
 
 public interface MealFoundationService {
 
-    MealEntity saveMeal(CreateMealRequest mealRequest);
+   MealDto saveMeal(MealDto mealDto);
 
-    MealEntity getById(Long id);
+    MealDto getMeal(Long id);
 
-    List<MealEntity> getByName(String name);
+    List<MealDto> getByName(String name);
 }

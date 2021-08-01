@@ -1,53 +1,70 @@
 package com.finartz.restaurantApi.service.foundation.impl;
 
 import com.finartz.restaurantApi.dao.MenuRepository;
-import com.finartz.restaurantApi.model.converter.request.impl.MenuRequestConverter;
+import com.finartz.restaurantApi.error.MenuError;
+import com.finartz.restaurantApi.exception.ResourceNotFoundException;
+import com.finartz.restaurantApi.model.converter.dto.impl.*;
+import com.finartz.restaurantApi.model.dto.*;
 import com.finartz.restaurantApi.model.entity.MealEntity;
 import com.finartz.restaurantApi.model.entity.MenuEntity;
 import com.finartz.restaurantApi.model.entity.RestaurantEntity;
-import com.finartz.restaurantApi.model.request.CreateMealMenuRequest;
-import com.finartz.restaurantApi.model.request.CreateRestaurantMenuRequest;
 import com.finartz.restaurantApi.service.foundation.MealFoundationService;
 import com.finartz.restaurantApi.service.foundation.MenuFoundationService;
 import com.finartz.restaurantApi.service.foundation.RestaurantFoundationService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.util.Optional;
+
 @Service
+@RequiredArgsConstructor
 public class MenuFoundationServiceImpl implements MenuFoundationService {
 
     private final MenuRepository menuRepository;
     private final RestaurantFoundationService restaurantFoundationService;
-    private final MenuRequestConverter menuRequestConverter;
     private final MealFoundationService mealFoundationService;
+    private final MealDTOConverter mealDTOConverter;
+    private final MenuDTOConverter menuDTOConverter;
+    private final RestaurantDTOConverter restaurantDTOConverter;
+    private final RestaurantMenuDtoConverter restaurantMenuDtoConverter;
+    private final MealMenuDtoConverter mealMenuDtoConverter;
 
-    public MenuFoundationServiceImpl(MenuRepository menuRepository,
-                                     RestaurantFoundationService restaurantFoundationService,
-                                     MenuRequestConverter menuRequestConverter, MealFoundationService mealFoundationService) {
-        this.menuRepository = menuRepository;
-        this.restaurantFoundationService = restaurantFoundationService;
-        this.menuRequestConverter = menuRequestConverter;
-        this.mealFoundationService = mealFoundationService;
-    }
-
+    @Transactional
     @Override
-    public MenuEntity saveRestaurantMenu(CreateRestaurantMenuRequest menuRequest) {
-        RestaurantEntity restaurantEntity = restaurantFoundationService.getById(menuRequest.getRestaurantId());
-        MenuEntity menuEntity = menuRequestConverter.convertToEntity(menuRequest);
+    public RestaurantMenuDto saveRestaurantMenu(RestaurantMenuDto restaurantMenu) {
+        Long restaurantId = restaurantMenu.getRestaurantId();
+        RestaurantDto restaurantDto = restaurantFoundationService.getRestaurant(restaurantId);
+
+        RestaurantEntity restaurantEntity = restaurantDTOConverter.convertToEntity(restaurantDto);
+        MenuEntity menuEntity = menuDTOConverter.convertToEntity(restaurantMenu);
         menuEntity.setRestaurant(restaurantEntity);
-        return menuRepository.saveMenu(menuEntity);
+        menuRepository.saveMenu(menuEntity);
+        return restaurantMenuDtoConverter.convertToDto(menuEntity);
     }
 
     @Override
-    public MenuEntity getById(Long menuId) {
-        return menuRepository.findById(menuId);
+    public MenuDto getMenu(Long menuId) {
+        MenuEntity menuEntity = menuRepository.findMenu(menuId).orElseThrow(() -> new ResourceNotFoundException(MenuError.MENU_NOT_FOUND));
+        return menuDTOConverter.convertToDto(menuEntity);
+
     }
 
+    @Transactional
     @Override
-    public MenuEntity saveMeal(CreateMealMenuRequest menuRequest) {
-        MealEntity mealEntity = mealFoundationService.getById(menuRequest.getMealId());
-        MenuEntity menuEntity = menuRepository.findById(menuRequest.getId());
-        menuEntity.getMeals().add(mealEntity);
-        return menuRepository.saveMealToMenu(menuEntity);
+    public MealMenuDto saveMeal(MealMenuDto mealMenu) {
+        Long mealId = mealMenu.getMealId();
+        Long menuId = mealMenu.getMenuId();
+
+        MealDto mealDto = mealFoundationService.getMeal(mealId);
+
+        MealEntity mealEntity = mealDTOConverter.convertToEntity(mealDto);
+        Optional<MenuEntity> optionalMenuEntity = menuRepository.findMenu(menuId);
+
+        optionalMenuEntity.get().getMeals().add(mealEntity);
+        MenuEntity menuEntity = menuRepository.saveMealToMenu(optionalMenuEntity.get());
+
+        return mealMenuDtoConverter.convertToDto(menuEntity);
 
     }
 }

@@ -1,12 +1,11 @@
 package com.finartz.restaurantApi.service.foundation;
 
-import com.finartz.restaurantApi.model.entity.UserEntity;
-import com.finartz.restaurantApi.model.request.CreateUserRequest;
+import com.finartz.restaurantApi.model.dto.UserDto;
 
 public interface UserFoundationService {
-    UserEntity getById(Long id);
+    UserDto getUser(Long id);
 
-    UserEntity getByUsername(String userName);
+    UserDto getByUsername(String userName);
 
-    UserEntity saveUser(CreateUserRequest userRequest);
+    UserDto saveUser(UserDto userDto);
 }

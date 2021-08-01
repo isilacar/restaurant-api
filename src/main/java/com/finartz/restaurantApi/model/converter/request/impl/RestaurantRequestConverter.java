@@ -1,6 +1,7 @@
 package com.finartz.restaurantApi.model.converter.request.impl;
 
 import com.finartz.restaurantApi.model.converter.request.BaseRequestConverter;
+import com.finartz.restaurantApi.model.dto.RestaurantDto;
 import com.finartz.restaurantApi.model.entity.RestaurantEntity;
 import com.finartz.restaurantApi.model.request.CreateRestaurantRequest;
 import org.springframework.stereotype.Component;
@@ -36,5 +37,20 @@ public class RestaurantRequestConverter implements BaseRequestConverter<Restaura
 
         return createRestaurantRequest;
      
+    }
+
+    public RestaurantDto convert(CreateRestaurantRequest createRestaurantRequest){
+        if(createRestaurantRequest==null){
+            return null;
+        }
+        RestaurantDto restaurantDto=new RestaurantDto();
+        restaurantDto.setId(createRestaurantRequest.getId());
+        restaurantDto.setName(createRestaurantRequest.getName());
+        restaurantDto.setCreateDate(createRestaurantRequest.getCreateDate());
+        restaurantDto.setUpdateDate(createRestaurantRequest.getUpdateDate());
+        restaurantDto.setStatus(createRestaurantRequest.getStatus());
+        restaurantDto.setLatitude(createRestaurantRequest.getLatitude());
+        restaurantDto.setLongitude(createRestaurantRequest.getLongitude());
+        return restaurantDto;
     }
 }

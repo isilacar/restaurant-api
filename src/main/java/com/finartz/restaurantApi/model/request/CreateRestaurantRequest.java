@@ -1,6 +1,6 @@
 package com.finartz.restaurantApi.model.request;
 
-import com.finartz.restaurantApi.model.enumeration.StatusEnum;
+import com.finartz.restaurantApi.model.enumeration.RestaurantStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,10 +15,12 @@ public class CreateRestaurantRequest extends BaseRequest{
     @Size(min = 1,message = "{restaurantName.size}")
     private String name;
 
-    private StatusEnum status = StatusEnum.AWAITING;
-
+    private RestaurantStatus status = RestaurantStatus.AWAITING;
+/*
     @NotNull(message = "{menuId.notNull}")
     @Min(value = 1,message = "{menuId.size}")
+
+ */
     private Long menuId;
 
     @DecimalMin(value = "-90.0",message = "{latitude.min}")

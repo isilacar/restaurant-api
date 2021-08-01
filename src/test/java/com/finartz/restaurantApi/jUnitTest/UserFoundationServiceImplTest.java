@@ -1,9 +1,9 @@
 package com.finartz.restaurantApi.jUnitTest;
 
 import com.finartz.restaurantApi.dao.UserRepository;
-import com.finartz.restaurantApi.model.converter.request.impl.UserRequestConverter;
+import com.finartz.restaurantApi.model.converter.dto.impl.UserDTOConverter;
+import com.finartz.restaurantApi.model.dto.UserDto;
 import com.finartz.restaurantApi.model.entity.UserEntity;
-import com.finartz.restaurantApi.model.request.CreateUserRequest;
 import com.finartz.restaurantApi.service.foundation.impl.UserFoundationServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,82 +12,95 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import static org.junit.Assert.*;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserFoundationServiceImplTest {
-
     @Mock
     private UserRepository userRepository;
     @Mock
-    private UserRequestConverter userRequestConverter;
-    @Mock
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Mock
+    private  UserDTOConverter userDTOConverter;
     @InjectMocks
     private UserFoundationServiceImpl userFoundationService;
 
     @Test
     public void getByIdTest(){
-        CreateUserRequest userRequest=new CreateUserRequest();
-        userRequest.setId(1L);
+        UserDto userDto=new UserDto();
+        userDto.setId(1L);
 
-        UserEntity mockedUser = getUserEntity(userRequest);
+        UserEntity mockedUser = getUserEntity(userDto);
 
-        when(userRepository.findById(any(Long.class))).thenReturn(mockedUser);
+        when(userRepository.findUser(any(Long.class))).thenReturn(Optional.of(mockedUser));
+        when(userDTOConverter.convertToDto(any(UserEntity.class))).thenReturn(userDto);
 
-        UserEntity userEntity = userFoundationService.getById(userRequest.getId());
-        assertEquals(userRequest.getId(),userEntity.getId());
-        assertNotNull(userEntity);
+        UserDto returnedDto = userFoundationService.getUser(userDto.getId());
+        assertEquals(userDto.getId(),returnedDto.getId());
+        assertNotNull(returnedDto);
 
-        verify(userRepository).findById(userRequest.getId());
+        verify(userRepository).findUser(userDto.getId());
+        verify(userDTOConverter).convertToDto(mockedUser);
 
 
     }
 
     @Test
     public void getByUsernameTest(){
-        CreateUserRequest userRequest=new CreateUserRequest();
-        userRequest.setUserName("test");
+       UserDto userDto=new UserDto();
+        userDto.setUserName("test");
 
-        UserEntity mockedEntity = getUserEntity(userRequest);
+        UserEntity mockedEntity = getUserEntity(userDto);
 
-        when(userRepository.findByUserName(any(String.class))).thenReturn(mockedEntity);
+        when(userRepository.findByUserName(any(String.class))).thenReturn(Optional.of(mockedEntity));
+        when(userDTOConverter.convertToDto(any(UserEntity.class))).thenReturn(userDto);
 
-        UserEntity userEntity = userFoundationService.getByUsername(userRequest.getUserName());
-        assertNotNull(userEntity);
-        assertEquals(userRequest.getUserName(),userEntity.getUserName());
+        UserDto returnedDto = userFoundationService.getByUsername(userDto.getUserName());
+        assertNotNull(returnedDto);
+        assertEquals(userDto.getUserName(),returnedDto.getUserName());
 
-        verify(userRepository).findByUserName(userRequest.getUserName());
+        verify(userRepository).findByUserName(userDto.getUserName());
+        verify(userDTOConverter).convertToDto(mockedEntity);
 
 
     }
 
     @Test
     public void saveUserTest(){
-        CreateUserRequest userRequest=new CreateUserRequest();
-        userRequest.setUserName("test");
-        UserEntity mockedEntity = getUserEntity(userRequest);
+        UserDto userDto=new UserDto();
+        userDto.setUserName("test");
+
+        UserEntity mockedEntity = getUserEntity(userDto);
 
         when(userRepository.saveUser(any(UserEntity.class))).thenReturn(mockedEntity);
-        when(userRequestConverter.convertToEntity(any(CreateUserRequest.class))).thenReturn(mockedEntity);
+        when(userDTOConverter.convertToDto(any(UserEntity.class))).thenReturn(userDto);
+        when(userDTOConverter.convertToEntity(any(UserDto.class))).thenReturn(mockedEntity);
 
-        UserEntity userEntity = userFoundationService.saveUser(userRequest);
-        assertNotNull(userEntity);
-        assertEquals(userRequest.getUserName(),userEntity.getUserName());
+        UserDto returnedDto = userFoundationService.saveUser(userDto);
+        assertNotNull(returnedDto);
+        assertEquals(userDto.getUserName(),returnedDto.getUserName());
 
-        verify(userRequestConverter).convertToEntity(userRequest);
+        verify(userDTOConverter).convertToDto(mockedEntity);
         verify(userRepository).saveUser(mockedEntity);
+        verify(userDTOConverter).convertToEntity(userDto);
     }
 
-    private UserEntity getUserEntity(CreateUserRequest userRequest) {
+
+
+    private UserEntity getUserEntity(UserDto userDto) {
         UserEntity userEntity=new UserEntity();
-        userEntity.setId(userRequest.getId());
-        userEntity.setUserName(userRequest.getUserName());
+        userEntity.setId(userDto.getId());
+        userEntity.setUserName(userDto.getUserName());
 
         return userEntity;
     }
+
+
 
 }

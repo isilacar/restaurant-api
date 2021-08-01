@@ -5,7 +5,7 @@ import com.finartz.restaurantApi.model.dto.UserDto;
 import com.finartz.restaurantApi.model.request.CreateUserRequest;
 import com.finartz.restaurantApi.security.JwtResponse;
 
-public interface UserAggregationService {
+public interface UserService {
 
     UserDto saveUser(CreateUserRequest userRequest);
 

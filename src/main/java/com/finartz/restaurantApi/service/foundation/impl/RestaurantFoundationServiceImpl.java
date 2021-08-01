@@ -1,54 +1,55 @@
 package com.finartz.restaurantApi.service.foundation.impl;
 
 import com.finartz.restaurantApi.dao.RestaurantRepository;
-import com.finartz.restaurantApi.model.converter.request.impl.RestaurantRequestConverter;
+import com.finartz.restaurantApi.error.RestaurantError;
+import com.finartz.restaurantApi.exception.ResourceNotFoundException;
+import com.finartz.restaurantApi.model.converter.dto.impl.RestaurantDTOConverter;
+import com.finartz.restaurantApi.model.converter.dto.impl.UserDTOConverter;
+import com.finartz.restaurantApi.model.dto.RestaurantDto;
+import com.finartz.restaurantApi.model.dto.UserDto;
 import com.finartz.restaurantApi.model.entity.RestaurantEntity;
 import com.finartz.restaurantApi.model.entity.UserEntity;
-import com.finartz.restaurantApi.model.enumeration.StatusEnum;
-import com.finartz.restaurantApi.model.request.CreateRestaurantRequest;
+import com.finartz.restaurantApi.model.enumeration.RestaurantStatus;
 import com.finartz.restaurantApi.security.TokenManager;
 import com.finartz.restaurantApi.service.foundation.RestaurantFoundationService;
 import com.finartz.restaurantApi.service.foundation.UserFoundationService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import java.util.*;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class RestaurantFoundationServiceImpl implements RestaurantFoundationService {
 
     private final RestaurantRepository restaurantRepository;
-    private final RestaurantRequestConverter restaurantRequestConverter;
     private final TokenManager tokenManager;
     private final HttpServletRequest httpServletRequest;
     private final UserFoundationService userFoundationService;
+    private final UserDTOConverter userDTOConverter;
+    private final RestaurantDTOConverter restaurantConverter;
 
-    public RestaurantFoundationServiceImpl(RestaurantRepository restaurantRepository,
-                                           RestaurantRequestConverter restaurantRequestConverter,
-                                           TokenManager tokenManager,
-                                           HttpServletRequest httpServletRequest,
-                                           UserFoundationService userFoundationService) {
-        this.restaurantRepository = restaurantRepository;
-        this.restaurantRequestConverter = restaurantRequestConverter;
-        this.tokenManager = tokenManager;
-        this.httpServletRequest = httpServletRequest;
-        this.userFoundationService = userFoundationService;
+    @Transactional
+    @Override
+    public RestaurantDto saveRestaurant(RestaurantDto restaurant) {
+        RestaurantEntity restaurantEntity = restaurantConverter.convertToEntity(restaurant);
+        restaurantRepository.saveRestaurant(restaurantEntity);
+        return restaurantConverter.convertToDto(restaurantEntity) ;
     }
 
     @Override
-    public RestaurantEntity saveRestaurant(CreateRestaurantRequest createRestaurantRequest) {
-        return restaurantRepository.saveRestaurant(restaurantRequestConverter.convertToEntity(createRestaurantRequest));
+    public RestaurantDto getRestaurant(Long id) {
+        RestaurantEntity restaurantEntity = restaurantRepository.findRestaurant(id).orElseThrow(() -> new ResourceNotFoundException(RestaurantError.RESTAURANT_NOT_FOUND));
+        return restaurantConverter.convertToDto(restaurantEntity);
+
     }
 
     @Override
-    public RestaurantEntity getById(Long id) {
-        return restaurantRepository.findById(id);
-    }
-
-    @Override
-    public List<RestaurantEntity> getAllNearestRestaurantByApproved() {
+    public List<RestaurantDto> getAllNearestRestaurantByApproved() {
         final String BEARER = "Bearer ";
         final String AUTHORIZATION = "Authorization";
         String userName = null;
@@ -56,9 +57,10 @@ public class RestaurantFoundationServiceImpl implements RestaurantFoundationServ
         String tokenHeader = httpServletRequest.getHeader(AUTHORIZATION);
         if (tokenHeader != null && tokenHeader.startsWith(BEARER)) {
             token = tokenHeader.substring(BEARER.length());
-            userName = tokenManager.getUsernameFromToken(token);
+                userName = tokenManager.getUsernameFromToken(token);
         }
-        UserEntity currentUser = userFoundationService.getByUsername(userName);
+        UserDto byUsername = userFoundationService.getByUsername(userName);
+        UserEntity currentUser = userDTOConverter.convertToEntity(byUsername);
         List<RestaurantEntity> nearestRestaurantEntities = restaurantRepository.findNearestRestaurantByStatusApproved(currentUser.getId());
         Map<Double, RestaurantEntity> entityMap = new HashMap<>();
         for (RestaurantEntity restaurantEntity : nearestRestaurantEntities) {
@@ -73,32 +75,41 @@ public class RestaurantFoundationServiceImpl implements RestaurantFoundationServ
             orderedRestaurants.add(value);
             log.info("ordered restaurant " + entityMap.get(key).getName());
         }
-        return orderedRestaurants;
+        return restaurantConverter.convertToDtoList(orderedRestaurants);
     }
 
+    @Transactional
     @Override
-    public void updateRestaurant(Long id, CreateRestaurantRequest createRestaurantRequest) {  //updatesRestaurantRequest oluştur,SON KARAR BÖYLE KALSIN
-        RestaurantEntity restaurantEntity = restaurantRepository.findById(id);
-        if (createRestaurantRequest.getName() != null) {
-            restaurantEntity.setName(createRestaurantRequest.getName());
+    public void updateRestaurant(Long id, RestaurantDto restaurantDto) {  //updatesRestaurantRequest oluştur,SON KARAR BÖYLE KALSIN
+       Optional<RestaurantEntity> optionalRestaurantEntity = restaurantRepository.findRestaurant(id);
+        RestaurantEntity restaurantEntity = optionalRestaurantEntity.get();
+        if (restaurantDto.getName() != null) {
+            restaurantEntity.setName(restaurantDto.getName());
         }
-        if (createRestaurantRequest.getStatus() != null) {
-            restaurantEntity.setStatus(createRestaurantRequest.getStatus());
+        if (restaurantDto.getStatus() != null) {
+            restaurantEntity.setStatus(restaurantDto.getStatus());
         }
-        if (createRestaurantRequest.getLatitude() != null) {
-            restaurantEntity.setLatitude(createRestaurantRequest.getLatitude());
+        if (restaurantDto.getLatitude() != null) {
+            restaurantEntity.setLatitude(restaurantDto.getLatitude());
         }
-        if (createRestaurantRequest.getLongitude() != null) {
-            restaurantEntity.setLongitude(createRestaurantRequest.getLongitude());
+        if (restaurantDto.getLongitude() != null) {
+            restaurantEntity.setLongitude(restaurantDto.getLongitude());
         }
-        // restaurantEntity.setUpdateDate(LocalDate.now());
         restaurantRepository.updateRestaurant(id, restaurantEntity);
     }
 
     @Override
-    public List<RestaurantEntity> getAllRestaurantByStatus(StatusEnum statusEnum) {
-        return restaurantRepository.findRestaurantByStatus(statusEnum);
+    public List<RestaurantDto> getAllRestaurantByStatus(RestaurantStatus statusEnum) {
+        List<RestaurantEntity> restaurants = restaurantRepository.findRestaurantByStatus(statusEnum);
+        return restaurantConverter.convertToDtoList(restaurants);
     }
+
+    @Override
+    public List<RestaurantDto> getAllRestaurants() {
+        List<RestaurantEntity> allRestaurants=restaurantRepository.getAll();
+        return restaurantConverter.convertToDtoList(allRestaurants);
+    }
+
 
     public static double distance(UserEntity userEntity, RestaurantEntity restaurantEntity) {
         Double lat1 = userEntity.getLatitude();

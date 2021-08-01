@@ -2,26 +2,22 @@ package com.finartz.restaurantApi.dao.impl;
 
 import com.finartz.restaurantApi.base.repository.BaseRepository;
 import com.finartz.restaurantApi.dao.MenuRepository;
-import com.finartz.restaurantApi.error.MenuError;
-import com.finartz.restaurantApi.exception.ResourceNotFoundException;
 import com.finartz.restaurantApi.model.entity.MenuEntity;
+import lombok.RequiredArgsConstructor;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.Query;
 import javax.transaction.Transactional;
+import java.util.Optional;
 
 @Repository
-@Transactional
-public class MenuRepositoryImpl extends BaseRepository<MenuEntity> implements MenuRepository {
+@RequiredArgsConstructor
+class MenuRepositoryImpl extends BaseRepository<MenuEntity> implements MenuRepository {
 
     private final EntityManager entityManager;
 
-    public MenuRepositoryImpl(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
-
+    @Transactional
     @Override
     public MenuEntity saveMenu(MenuEntity menuEntity) {
         save(menuEntity);
@@ -29,25 +25,17 @@ public class MenuRepositoryImpl extends BaseRepository<MenuEntity> implements Me
     }
 
     @Override
-    public MenuEntity findById(Long menuId) {
-        MenuEntity menuEntity=null;
-        try{
+    public Optional<MenuEntity> findMenu(Long menuId) {
+
             String hql="select menu from MenuEntity menu where menu.id =:menuId";
-            Query query = entityManager.createQuery(hql);
+            Query query = (Query) entityManager.createQuery(hql);
             query.setParameter("menuId",menuId);
-           menuEntity =(MenuEntity) query.getSingleResult();
-        }catch (NoResultException exception){
-            throw new ResourceNotFoundException(MenuError.MENU_NOT_FOUND);
+           MenuEntity menuEntity =(MenuEntity)query.uniqueResult();
+        if(menuEntity==null){
+            return Optional.empty();
         }
 
-        return menuEntity;
-        /*
-        return (MenuEntity) entityManager
-                .createQuery("select menu from MenuEntity menu where menu.id =:menuId")
-                .setParameter("menuId", menuId)
-                .getSingleResult();
-
-         */
+        return Optional.of(menuEntity);
     }
 
     @Override

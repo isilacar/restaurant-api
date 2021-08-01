@@ -3,22 +3,19 @@ package com.finartz.restaurantApi.model.converter.dto.impl;
 import com.finartz.restaurantApi.model.converter.dto.BaseDTOConverter;
 import com.finartz.restaurantApi.model.dto.RestaurantDto;
 import com.finartz.restaurantApi.model.entity.RestaurantEntity;
+import com.finartz.restaurantApi.model.request.CreateRestaurantRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class RestaurantDTOConverter implements BaseDTOConverter<RestaurantEntity, RestaurantDto> {
 
     private final MenuDTOConverter menuConverter;
     private final AddressDTOConverter addressConverter;
-
-    public RestaurantDTOConverter(MenuDTOConverter menuConverter, AddressDTOConverter addressConverter) {
-        this.menuConverter = menuConverter;
-        this.addressConverter = addressConverter;
-    }
-
 
     @Override
     public RestaurantEntity convertToEntity(RestaurantDto dto) {
@@ -50,6 +47,18 @@ public class RestaurantDTOConverter implements BaseDTOConverter<RestaurantEntity
         if (!entity.getAddressEntities().isEmpty()) {
             restaurantDto.setAddresses(addressConverter.convertToDtoList(entity.getAddressEntities()));
         }
+        return restaurantDto;
+    }
+    public RestaurantDto convertToDto(CreateRestaurantRequest restaurantRequest) {
+        RestaurantDto restaurantDto=new RestaurantDto();
+        restaurantDto.setId(restaurantRequest.getId());
+        restaurantDto.setName(restaurantRequest.getName());
+        restaurantDto.setCreateDate(restaurantRequest.getCreateDate());
+        restaurantDto.setUpdateDate(restaurantRequest.getUpdateDate());
+        restaurantDto.setStatus(restaurantRequest.getStatus());
+        restaurantDto.setLatitude(restaurantRequest.getLatitude());
+        restaurantDto.setLongitude(restaurantRequest.getLongitude());
+
         return restaurantDto;
     }
 

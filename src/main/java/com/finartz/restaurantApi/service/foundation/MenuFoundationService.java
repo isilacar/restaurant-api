@@ -1,14 +1,14 @@
 package com.finartz.restaurantApi.service.foundation;
 
-import com.finartz.restaurantApi.model.entity.MenuEntity;
-import com.finartz.restaurantApi.model.request.CreateMealMenuRequest;
-import com.finartz.restaurantApi.model.request.CreateRestaurantMenuRequest;
+import com.finartz.restaurantApi.model.dto.MealMenuDto;
+import com.finartz.restaurantApi.model.dto.MenuDto;
+import com.finartz.restaurantApi.model.dto.RestaurantMenuDto;
 
 public interface MenuFoundationService {
 
-    MenuEntity saveRestaurantMenu(CreateRestaurantMenuRequest menuRequest);
+    RestaurantMenuDto saveRestaurantMenu(RestaurantMenuDto restaurantMenu);
 
-    MenuEntity getById(Long menuId);
+    MenuDto getMenu(Long menuId);
 
-    MenuEntity saveMeal(CreateMealMenuRequest menuRequest);
+    MealMenuDto saveMeal(MealMenuDto mealMenuDto);
 }

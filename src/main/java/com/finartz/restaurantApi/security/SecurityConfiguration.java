@@ -1,6 +1,7 @@
 package com.finartz.restaurantApi.security;
 
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,19 +16,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
     private final JwtFilter filter;
+    private final ExceptionHandlerFilter exceptionHandlerFilter;
     private final JwtAuthenticationEntryPoint authenticationEntryPoint;
-
-    public SecurityConfiguration(UserDetailsService userDetailsService,
-                                 JwtFilter filter,
-                                 JwtAuthenticationEntryPoint authenticationEntryPoint) {
-        this.userDetailsService = userDetailsService;
-        this.filter = filter;
-        this.authenticationEntryPoint = authenticationEntryPoint;
-    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -57,11 +52,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
 
-
+        http.addFilterBefore(exceptionHandlerFilter, JwtFilter.class);
     }
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+
 }

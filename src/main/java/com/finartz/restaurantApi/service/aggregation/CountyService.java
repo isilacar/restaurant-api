@@ -4,7 +4,7 @@ import com.finartz.restaurantApi.model.dto.CountyDto;
 
 import java.util.List;
 
-public interface CountyAggregationService {
+public interface CountyService {
 
     List<CountyDto> getAllByCityId(Long cityId);
 

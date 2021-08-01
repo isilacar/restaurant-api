@@ -1,6 +1,6 @@
 package com.finartz.restaurantApi.model.enumeration;
 
-public enum Role {
+public enum UserRoleStatus {
     USER,SELLER,ADMIN;
 
     @Override

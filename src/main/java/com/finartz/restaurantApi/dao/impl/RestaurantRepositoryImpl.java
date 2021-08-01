@@ -2,30 +2,26 @@ package com.finartz.restaurantApi.dao.impl;
 
 import com.finartz.restaurantApi.base.repository.BaseRepository;
 import com.finartz.restaurantApi.dao.RestaurantRepository;
-import com.finartz.restaurantApi.error.RestaurantError;
-import com.finartz.restaurantApi.exception.ResourceNotFoundException;
 import com.finartz.restaurantApi.model.entity.RestaurantEntity;
-import com.finartz.restaurantApi.model.enumeration.StatusEnum;
+import com.finartz.restaurantApi.model.enumeration.RestaurantStatus;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.query.Query;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
-@Transactional
-public class RestaurantRepositoryImpl extends BaseRepository<RestaurantEntity> implements RestaurantRepository {
-
-    public RestaurantRepositoryImpl(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
+@RequiredArgsConstructor
+class RestaurantRepositoryImpl extends BaseRepository<RestaurantEntity> implements RestaurantRepository {
 
     private final EntityManager entityManager;
 
+    @Transactional
     @Override
     public RestaurantEntity saveRestaurant(RestaurantEntity restaurantEntity) {
         save(restaurantEntity);
@@ -33,20 +29,18 @@ public class RestaurantRepositoryImpl extends BaseRepository<RestaurantEntity> i
     }
 
     @Override
-    public RestaurantEntity findById(Long restaurantId) {
+    public Optional<RestaurantEntity> findRestaurant(Long restaurantId) {
 
-        RestaurantEntity restaurantEntity=null;
-        try{
             String hql = "select restaurant from RestaurantEntity restaurant" +
                     " left join fetch restaurant.addressEntities WHERE restaurant.id= :restId";
             Query query = (Query) entityManager.createQuery(hql);
             query.setParameter("restId", restaurantId);
-            restaurantEntity=(RestaurantEntity) query.getSingleResult();
-        }catch (NoResultException exception){
-            throw new ResourceNotFoundException(RestaurantError.RESTAURANT_NOT_FOUND);
-        }
+            RestaurantEntity restaurantEntity=(RestaurantEntity) query.uniqueResult();
+            if(restaurantEntity==null){
+                return Optional.empty();
+            }
 
-        return restaurantEntity;
+        return Optional.of(restaurantEntity);
     }
 
     @Override
@@ -62,6 +56,7 @@ public class RestaurantRepositoryImpl extends BaseRepository<RestaurantEntity> i
         return (List<RestaurantEntity>) query.getResultList();
     }
 
+    @Transactional
     @Modifying
     @Override
     public void updateRestaurant(Long id, RestaurantEntity restaurantEntity) {
@@ -77,7 +72,7 @@ public class RestaurantRepositoryImpl extends BaseRepository<RestaurantEntity> i
     }
 
     @Override
-    public List<RestaurantEntity> findRestaurantByStatus(StatusEnum statusEnum) {
+    public List<RestaurantEntity> findRestaurantByStatus(RestaurantStatus statusEnum) {
         String hql = "select restaurant from RestaurantEntity restaurant left join fetch restaurant.addressEntities " +
                 "WHERE restaurant.status=:statusEnum";
         Query query = (Query) entityManager.createQuery(hql);
@@ -87,46 +82,14 @@ public class RestaurantRepositoryImpl extends BaseRepository<RestaurantEntity> i
         return resultList;
 
     }
-/*
-    @Modifying
-    @Override
-    public void updateStatus(Long restaurantId, StatusEnum statusEnum) {
-        String hql = "update RestaurantEntity restaurant set restaurant.status=:statusEnum" +
-                " where restaurant.id=:restaurantId";
-
-        Query query = (Query) entityManager.createQuery(hql);
-        query.setParameter("statusEnum", statusEnum);
-        query.setParameter("restaurantId", restaurantId);
-        query.executeUpdate();
-
-    }
-
-
-
-    //findrestaurantbystatus diyip hangi statüsü istiyosak onu parametre olarak iste
-
 
     @Override
-    public List<RestaurantEntity> findRestaurantByStatusAwaiting() {
-
-        String hql = "select restaurant from RestaurantEntity restaurant left join fetch restaurant.addressEntities " +
-                "WHERE restaurant.status= 'AWAITING'";
-        Query query = (Query) entityManager.createQuery(hql);
-        List resultList = query.getResultList();
-
-        return resultList;
-
-    }
-
-    @Override
-    public List<RestaurantEntity> findRestaurantByStatusApproved() {
-        String hql = "select restaurant from RestaurantEntity restaurant left join fetch restaurant.addressEntities " +
-                "WHERE restaurant.status= 'APPROVED'";
-        Query query = (Query) entityManager.createQuery(hql);
-        List resultList = query.getResultList();
+    public List<RestaurantEntity> getAll() {
+        String hql="select restaurant from RestaurantEntity restaurant left join fetch restaurant.addressEntities";
+        Query query=(Query) entityManager.createQuery(hql);
+        List resultList= query.getResultList();
         return resultList;
     }
 
- */
 }
 

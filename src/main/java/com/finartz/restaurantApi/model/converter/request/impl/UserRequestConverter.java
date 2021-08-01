@@ -1,5 +1,6 @@
 package com.finartz.restaurantApi.model.converter.request.impl;
 
+import com.finartz.restaurantApi.model.dto.UserDto;
 import com.finartz.restaurantApi.model.entity.UserEntity;
 import com.finartz.restaurantApi.model.request.CreateUserRequest;
 import org.springframework.stereotype.Component;
@@ -37,5 +38,20 @@ public class UserRequestConverter {
         userRequest.setLongitude(userEntity.getLongitude());
         userRequest.setEMail(userRequest.getEMail());
         return userRequest;
+    }
+
+    public UserDto convertToDto(CreateUserRequest userRequest){
+
+        UserDto userDto=new UserDto();
+        userDto.setId(userRequest.getId());
+        userDto.setCreateDate(userRequest.getCreateDate());
+        userDto.setUpdateDate(userRequest.getUpdateDate());
+        userDto.setUserName(userRequest.getUserName());
+        userDto.setPassword(userRequest.getPassword());
+        userDto.setRole(userRequest.getRole());
+        userDto.setLatitude(userRequest.getLatitude());
+        userDto.setLongitude(userRequest.getLongitude());
+        userDto.setEMail(userRequest.getEMail());
+        return userDto;
     }
 }

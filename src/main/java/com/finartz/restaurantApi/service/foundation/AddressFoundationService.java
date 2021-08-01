@@ -1,12 +1,11 @@
 package com.finartz.restaurantApi.service.foundation;
 
-import com.finartz.restaurantApi.model.entity.AddressEntity;
-import com.finartz.restaurantApi.model.request.CreateRestaurantAddressRequest;
-import com.finartz.restaurantApi.model.request.CreateUserAddressRequest;
+import com.finartz.restaurantApi.model.dto.RestaurantAddressDto;
+import com.finartz.restaurantApi.model.dto.UserAddressDto;
 
 public interface AddressFoundationService {
 
-    AddressEntity saveUserAddress(CreateUserAddressRequest userAddressRequest);
-    AddressEntity saveRestaurantAddress(CreateRestaurantAddressRequest restaurantAddressRequest);
+    UserAddressDto saveUserAddress(UserAddressDto addressDto);
+    RestaurantAddressDto saveRestaurantAddress(RestaurantAddressDto restaurantAddressRequest);
 
 }

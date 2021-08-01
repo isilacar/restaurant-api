@@ -1,21 +1,22 @@
 package com.finartz.restaurantApi.service.foundation;
 
-import com.finartz.restaurantApi.model.entity.RestaurantEntity;
-import com.finartz.restaurantApi.model.enumeration.StatusEnum;
-import com.finartz.restaurantApi.model.request.CreateRestaurantRequest;
+import com.finartz.restaurantApi.model.dto.RestaurantDto;
+import com.finartz.restaurantApi.model.enumeration.RestaurantStatus;
 
 import java.util.List;
 
 public interface RestaurantFoundationService {
-    RestaurantEntity saveRestaurant(CreateRestaurantRequest createRestaurantRequest);
+    RestaurantDto saveRestaurant(RestaurantDto restaurant);
 
-    RestaurantEntity getById(Long id);
+    RestaurantDto getRestaurant(Long id);
 
-    List<RestaurantEntity> getAllNearestRestaurantByApproved();
+    List<RestaurantDto> getAllNearestRestaurantByApproved();
 
-    void updateRestaurant(Long id,CreateRestaurantRequest createRestaurantRequest);
+    void updateRestaurant(Long id,RestaurantDto restaurantDto);
 
-    List<RestaurantEntity> getAllRestaurantByStatus(StatusEnum statusEnum);
+    List<RestaurantDto> getAllRestaurantByStatus(RestaurantStatus statusEnum);
+
+    List<RestaurantDto> getAllRestaurants();
 
     //  List<RestaurantEntity> getAllRestaurantByApproved();
 

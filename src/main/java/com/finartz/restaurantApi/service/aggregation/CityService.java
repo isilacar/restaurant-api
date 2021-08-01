@@ -4,9 +4,9 @@ import com.finartz.restaurantApi.model.dto.CityDto;
 
 import java.util.List;
 
-public interface CityAggregationService {
+public interface CityService {
 
-    List<CityDto> getAllCities();
+    List<CityDto> getCities();
 
-    CityDto getById(Long id);
+    CityDto getCity(Long id);
 }

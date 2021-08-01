@@ -3,19 +3,17 @@ package com.finartz.restaurantApi.model.converter.dto.impl;
 import com.finartz.restaurantApi.model.converter.dto.BaseDTOConverter;
 import com.finartz.restaurantApi.model.dto.CountyDto;
 import com.finartz.restaurantApi.model.entity.CountyEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class CountyDTOConverter implements BaseDTOConverter<CountyEntity, CountyDto> {
 
     private final CityDTOConverter cityConverter;
-
-    public CountyDTOConverter(CityDTOConverter cityConverter) {
-        this.cityConverter = cityConverter;
-    }
 
     @Override
     public CountyEntity convertToEntity(CountyDto dto) {

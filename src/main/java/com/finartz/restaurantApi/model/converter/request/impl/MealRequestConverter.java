@@ -2,6 +2,7 @@ package com.finartz.restaurantApi.model.converter.request.impl;
 
 import com.finartz.restaurantApi.model.converter.request.BaseRequestConverter;
 import com.finartz.restaurantApi.model.entity.MealEntity;
+import com.finartz.restaurantApi.model.dto.MealDto;
 import com.finartz.restaurantApi.model.request.CreateMealRequest;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +15,7 @@ public class MealRequestConverter implements BaseRequestConverter<MealEntity, Cr
 
     @Override
     public MealEntity convertToEntity(CreateMealRequest createMealRequest) {
-        MealEntity mealEntity=new MealEntity();
+        MealEntity mealEntity = new MealEntity();
         mealEntity.setId(createMealRequest.getId());
         mealEntity.setCreateDate(createMealRequest.getCreateDate());
         mealEntity.setUpdateDate(createMealRequest.getUpdateDate());
@@ -25,7 +26,7 @@ public class MealRequestConverter implements BaseRequestConverter<MealEntity, Cr
 
     @Override
     public CreateMealRequest convertToRequest(MealEntity mealEntity) {
-        CreateMealRequest mealRequest=new CreateMealRequest();
+        CreateMealRequest mealRequest = new CreateMealRequest();
         mealRequest.setId(mealEntity.getId());
         mealRequest.setCreateDate(mealEntity.getCreateDate());
         mealRequest.setUpdateDate(mealEntity.getUpdateDate());
@@ -33,7 +34,18 @@ public class MealRequestConverter implements BaseRequestConverter<MealEntity, Cr
         mealRequest.setPrice(mealEntity.getPrice());
         return mealRequest;
     }
-    public List<MealEntity> convertToEntityList(List<CreateMealRequest> mealRequests){
+
+    public List<MealEntity> convertToEntityList(List<CreateMealRequest> mealRequests) {
         return mealRequests.stream().map(this::convertToEntity).collect(Collectors.toList());
+    }
+
+    public MealDto convertToDto(CreateMealRequest mealRequest) {
+        MealDto mealDto = new MealDto();
+        mealDto.setId(mealRequest.getId());
+        mealDto.setCreateDate(mealRequest.getCreateDate());
+        mealDto.setUpdateDate(mealRequest.getUpdateDate());
+        mealDto.setName(mealRequest.getName());
+        mealDto.setPrice(mealRequest.getPrice());
+        return mealDto;
     }
 }

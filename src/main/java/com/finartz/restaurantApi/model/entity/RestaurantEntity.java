@@ -1,6 +1,6 @@
 package com.finartz.restaurantApi.model.entity;
 
-import com.finartz.restaurantApi.model.enumeration.StatusEnum;
+import com.finartz.restaurantApi.model.enumeration.RestaurantStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +19,7 @@ public class RestaurantEntity extends BaseEntity {
     private String name;
 
     @Enumerated(value = EnumType.STRING)
-    private StatusEnum status;
+    private RestaurantStatus status;
 
     @OneToOne(mappedBy = "restaurant",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private MenuEntity menu;

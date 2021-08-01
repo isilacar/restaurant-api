@@ -20,7 +20,6 @@ public enum UserError implements ErrorSymbol{
         return SYMBOL_NAME;
     }
 
-
     /*
     burada message.properties dosyamızdaki user.001 hatasının mesajını almaya çalışıyoruz. Bşka bir hatamız olduğunda
     onu da yukrda enum olarak tanımlayıp,kodunu 002 yaparak,getmessage diyerek çağırabilirz. Symbol_namemimiz değişmeyecek ama

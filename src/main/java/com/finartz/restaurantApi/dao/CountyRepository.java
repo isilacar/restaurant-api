@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface CountyRepository{
 
-    List<CountyEntity> getAllCountiesByCityId(Long cityId);
+    List<CountyEntity> findCounties(Long cityId);
 
-    CountyEntity findById(Long id);
+    CountyEntity findCounty(Long id);
 }

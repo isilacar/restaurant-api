@@ -5,10 +5,10 @@ import com.finartz.restaurantApi.model.request.CreateMealRequest;
 
 import java.util.List;
 
-public interface MealAggregationService {
+public interface MealService {
     MealDto saveMeal(CreateMealRequest mealRequest);
 
-    MealDto getById(Long mealId);
+    MealDto getMeal(Long mealId);
 
     List<MealDto> getByMealName(String mealName);
 

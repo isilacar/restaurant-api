@@ -1,38 +1,44 @@
 package com.finartz.restaurantApi.service.foundation.impl;
 
 import com.finartz.restaurantApi.dao.MealRepository;
-import com.finartz.restaurantApi.model.converter.request.impl.MealRequestConverter;
+import com.finartz.restaurantApi.error.MealError;
+import com.finartz.restaurantApi.exception.ResourceNotFoundException;
+import com.finartz.restaurantApi.model.converter.dto.impl.MealDTOConverter;
+import com.finartz.restaurantApi.model.dto.MealDto;
 import com.finartz.restaurantApi.model.entity.MealEntity;
-import com.finartz.restaurantApi.model.request.CreateMealRequest;
 import com.finartz.restaurantApi.service.foundation.MealFoundationService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class MealFoundationServiceImpl implements MealFoundationService {
 
     private final MealRepository mealRepository;
-    private final MealRequestConverter mealRequestConverter;
+    private final MealDTOConverter dtoConverter;
 
-    public MealFoundationServiceImpl(MealRepository mealRepository,
-                                     MealRequestConverter mealRequestConverter) {
-        this.mealRepository = mealRepository;
-        this.mealRequestConverter = mealRequestConverter;
-    }
+    @Transactional
     @Override
-    public MealEntity saveMeal(CreateMealRequest mealRequest) {
-        return mealRepository.saveMeal(mealRequestConverter.convertToEntity(mealRequest));
-    }
+    public MealDto saveMeal(MealDto mealDto) {
 
-    @Override
-    public MealEntity getById(Long id) {
+        MealEntity mealEntity = mealRepository.saveMeal(dtoConverter.convertToEntity(mealDto));
 
-        return mealRepository.findById(id);
+        return dtoConverter.convertToDto(mealEntity);
     }
 
     @Override
-    public List<MealEntity> getByName(String name) {
-        return mealRepository.findByName(name);
+    public MealDto getMeal(Long id) {
+        MealEntity mealEntity = mealRepository.findMeal(id).orElseThrow(() -> new ResourceNotFoundException(MealError.MEAL_NOT_FOUND));
+        return dtoConverter.convertToDto(mealEntity);
+
+    }
+
+    @Override
+    public List<MealDto> getByName(String name) {
+        List<MealEntity> mealEntities = mealRepository.findByName(name);
+        return dtoConverter.convertToDtoList(mealEntities);
     }
 }

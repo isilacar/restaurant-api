@@ -1,8 +1,9 @@
 package com.finartz.restaurantApi.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.finartz.restaurantApi.error.JwtError;
+import com.finartz.restaurantApi.exception.MalFormedException;
+import com.finartz.restaurantApi.exception.TokenExpiredException;
+import io.jsonwebtoken.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -61,19 +62,38 @@ public class TokenManager implements Serializable {
     public Boolean validateJwtToken(String token, UserDetails userDetails) {
 
         String username = getUsernameFromToken(token);
+
         Claims claims = Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
                 .getBody();
+
         Boolean isTokenExpired = claims.getExpiration().before(new Date());
+/*
+        if (isTokenExpired) {
+            throw new TokenExpiredException(JwtError.EXPIRED_JWT_EXCEPTION);
+        }
+
+ */
         return (username.equals(userDetails.getUsername()) && !isTokenExpired);
+
+
     }
 
     public String getUsernameFromToken(String token) {
-        final Claims claims = Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.getSubject();
+
+        try {
+            final Claims claims = Jwts.parser()
+                    .setSigningKey(secretKey)
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            return claims.getSubject();
+        } catch (MalformedJwtException e) {
+            throw new MalFormedException(JwtError.MALFORMED_EXCEPTION);
+        } catch (ExpiredJwtException e) {
+            throw new TokenExpiredException(JwtError.EXPIRED_JWT_EXCEPTION);
+        }
+
     }
 }

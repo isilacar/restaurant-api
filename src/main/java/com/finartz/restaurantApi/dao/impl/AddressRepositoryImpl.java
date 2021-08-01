@@ -8,9 +8,9 @@ import org.springframework.stereotype.Repository;
 import javax.transaction.Transactional;
 
 @Repository
-@Transactional
-public class AddressRepositoryImpl extends BaseRepository<AddressEntity> implements AddressRepository {
+class AddressRepositoryImpl extends BaseRepository<AddressEntity> implements AddressRepository {
 
+    @Transactional
     @Override
     public AddressEntity saveAddress(AddressEntity addressEntity) {
         save(addressEntity);

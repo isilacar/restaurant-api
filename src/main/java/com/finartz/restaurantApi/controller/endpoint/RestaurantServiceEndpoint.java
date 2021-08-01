@@ -34,4 +34,9 @@ public class RestaurantServiceEndpoint {
     public class GetAllByStatusApproved{
         public static final String URI=BASE_URI;
     }
+
+    public class GetRestaurants{
+        public static final String URI=BASE_URI+"/all";
+
+    }
 }

@@ -6,6 +6,8 @@ target/
 
 *.sql
 
+src/main/resources/data.sql
+
 ### STS ###
 .apt_generated
 .classpath

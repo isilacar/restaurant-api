@@ -1,12 +1,12 @@
 package com.finartz.restaurantApi.service.foundation;
 
-import com.finartz.restaurantApi.model.entity.CityEntity;
+import com.finartz.restaurantApi.model.dto.CityDto;
 
 import java.util.List;
 
 public interface CityFoundationService {
 
-    List<CityEntity> getAll();
+    List<CityDto> getAll();
 
-    CityEntity getById(Long id);
+    CityDto getCity(Long id);
 }

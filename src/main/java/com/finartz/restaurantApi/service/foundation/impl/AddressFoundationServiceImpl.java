@@ -1,60 +1,72 @@
 package com.finartz.restaurantApi.service.foundation.impl;
 
 import com.finartz.restaurantApi.dao.AddressRepository;
-import com.finartz.restaurantApi.model.converter.request.impl.AddressRequestConverter;
+import com.finartz.restaurantApi.model.converter.dto.impl.*;
+import com.finartz.restaurantApi.model.dto.RestaurantAddressDto;
+import com.finartz.restaurantApi.model.dto.UserAddressDto;
 import com.finartz.restaurantApi.model.entity.*;
-import com.finartz.restaurantApi.model.request.CreateRestaurantAddressRequest;
-import com.finartz.restaurantApi.model.request.CreateUserAddressRequest;
 import com.finartz.restaurantApi.service.foundation.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+
 @Service
+@RequiredArgsConstructor
 public class AddressFoundationServiceImpl implements AddressFoundationService {
 
     private final AddressRepository addressRepository;
     private final UserFoundationService userFoundationService;
     private final CityFoundationService cityFoundationService;
     private final CountyFoundationService countyFoundationService;
-    private final AddressRequestConverter addressRequestConverter;
     private final RestaurantFoundationService restaurantFoundationService;
+    private final AddressDTOConverter addressDTOConverter;
+    private final UserDTOConverter userDTOConverter;
+    private final CityDTOConverter cityDTOConverter;
+    private final CountyDTOConverter countyDTOConverter;
+    private final UserAddressDtoConverter userAddressConverter;
+    private final RestaurantAddressDtoConverter restaurantAddressDtoConverter;
+    private final RestaurantDTOConverter restaurantDTOConverter;
 
-    public AddressFoundationServiceImpl(AddressRepository addressRepository,
-                                        UserFoundationService userFoundationService,
-                                        CityFoundationService cityFoundationService,
-                                        CountyFoundationService countyFoundationService,
-                                        AddressRequestConverter addressRequestConverter, RestaurantFoundationService restaurantFoundationService) {
-        this.addressRepository = addressRepository;
-        this.userFoundationService = userFoundationService;
-        this.cityFoundationService = cityFoundationService;
-        this.countyFoundationService = countyFoundationService;
-        this.addressRequestConverter = addressRequestConverter;
-        this.restaurantFoundationService = restaurantFoundationService;
-    }
-
+    @Transactional
     @Override
-    public AddressEntity saveUserAddress(CreateUserAddressRequest userAddressRequest) {
+    public UserAddressDto saveUserAddress(UserAddressDto addressDto) {
 
-        UserEntity userEntity = userFoundationService.getById(userAddressRequest.getUserId());
-        CityEntity cityEntity = cityFoundationService.getById(userAddressRequest.getCityId());
-        CountyEntity countyEntity = countyFoundationService.getById(userAddressRequest.getCountyId());
-        AddressEntity addressEntity = addressRequestConverter.convert(userAddressRequest);
+        Long userId = addressDto.getUserId();
+        Long cityId = addressDto.getCity().getId();
+        Long countyId = addressDto.getCounty().getId();
+
+        UserEntity userEntity = userDTOConverter.convertToEntity(userFoundationService.getUser(userId));
+        CityEntity cityEntity = cityDTOConverter.convertToEntity(cityFoundationService.getCity(cityId));
+        CountyEntity countyEntity = countyDTOConverter.convertToEntity(countyFoundationService.getCounty(countyId));
+
+        AddressEntity addressEntity = addressDTOConverter.convertToEntity(addressDto);
         addressEntity.setUserEntity(userEntity);
         addressEntity.setCityEntity(cityEntity);
         addressEntity.setCountyEntity(countyEntity);
+        addressRepository.saveAddress(addressEntity);
 
-        return addressRepository.saveAddress(addressEntity);
+        return userAddressConverter.convertToDto(addressEntity);
     }
 
+    @Transactional
     @Override
-    public AddressEntity saveRestaurantAddress(CreateRestaurantAddressRequest restaurantAddressRequest) {
-        RestaurantEntity restaurantEntity = restaurantFoundationService.getById(restaurantAddressRequest.getRestaurantId());
-        CityEntity cityEntity = cityFoundationService.getById(restaurantAddressRequest.getCityId());
-        CountyEntity countyEntity = countyFoundationService.getById(restaurantAddressRequest.getCountyId());
-        AddressEntity addressEntity = addressRequestConverter.convert(restaurantAddressRequest);
+    public RestaurantAddressDto saveRestaurantAddress(RestaurantAddressDto restaurantAddressDto) {
+        Long restaurantId = restaurantAddressDto.getRestaurantId();
+        Long cityId = restaurantAddressDto.getCity().getId();
+        Long countyId = restaurantAddressDto.getCounty().getId();
+
+        CityEntity cityEntity = cityDTOConverter.convertToEntity(cityFoundationService.getCity(cityId));
+        CountyEntity countyEntity = countyDTOConverter.convertToEntity(countyFoundationService.getCounty(countyId));
+        RestaurantEntity restaurantEntity = restaurantDTOConverter.convertToEntity(restaurantFoundationService.getRestaurant(restaurantId));
+
+
+        AddressEntity addressEntity=addressDTOConverter.convertToEntity(restaurantAddressDto);
         addressEntity.setRestaurantEntity(restaurantEntity);
         addressEntity.setCityEntity(cityEntity);
         addressEntity.setCountyEntity(countyEntity);
+        addressRepository.saveAddress(addressEntity);
 
-        return addressRepository.saveAddress(addressEntity);
+        return restaurantAddressDtoConverter.convertToDto(addressEntity);
     }
 }
